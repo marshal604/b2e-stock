@@ -1,0 +1,22 @@
+type EverydayStockInfo {
+  code: String
+  name: String
+  volumn: String
+  openPrice: String
+  highPrice: String
+  lowPrice: String
+  closePrice: String
+  raisePoint: String
+  raisePercent: String
+  PE: String
+}
+
+type EverydayStockInfoItem {
+  date: String!
+  stockInfo: [EverydayStockInfo]!
+}
+
+input EverydayStockInfoItemInput {
+  code: String
+  dayCount: Int
+}

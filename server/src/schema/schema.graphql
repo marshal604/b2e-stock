@@ -1,0 +1,8 @@
+# import EverydayStockInfoItem, EverydayStockInfoItemInput from './stcok-info/stock-info.graphql';
+
+type Query {
+  sayHello(name: String): String!
+  EverydayStockInfoList(
+    req: EverydayStockInfoItemInput
+  ): [EverydayStockInfoItem]
+}
