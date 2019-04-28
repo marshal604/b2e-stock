@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { isCurrentDateIsWeekend, formatDate as formatDateFunc } from '@utils/date/date';
-import { writeFile, readFileSync } from '@utils/io/io';
+import { writeFile, readFileSync, mkdirIfNotExist } from '@utils/io/io';
 import { FileModel } from '@utils/io/io.model';
 import {
   EverydayMarketInfo,
@@ -10,19 +10,21 @@ import {
 } from '@models/stock-info/stock-info.model';
 export class EverydayStockInfoCrawler {
   private initDate: Date;
+  private path = 'everyday-stock-info';
   constructor(date: Date) {
     this.initDate = date;
   }
 
   init() {
     const half_day = 43_200_000;
-    this.dailyCrawlerEveryDayStockInfo();
+    this.dailyCrawlEveryDayStockInfo();
     setInterval(() => {
-      this.dailyCrawlerEveryDayStockInfo();
+      this.dailyCrawlEveryDayStockInfo();
     }, half_day);
   }
 
-  private dailyCrawlerEveryDayStockInfo() {
+  private dailyCrawlEveryDayStockInfo() {
+    mkdirIfNotExist(this.path);
     const intervalTime = 5_000;
     // create everyday-stock-info
     let everyStockDate = new Date(this.initDate);
@@ -110,7 +112,7 @@ export class EverydayStockInfoCrawler {
             stock: filterStockData
           };
           writeFile({
-            path: 'everyday-stock-info',
+            path: this.path,
             fileName: formatDate,
             data: JSON.stringify(list)
           });
@@ -136,7 +138,7 @@ export class EverydayStockInfoCrawler {
   }
 
   private hasEveryDayStockDataJson(formatDate: string, log = true): boolean {
-    const path = 'everyday-stock-info';
+    const path = this.path;
     try {
       const fileOption: FileModel = {
         path,
@@ -146,7 +148,7 @@ export class EverydayStockInfoCrawler {
       return true;
     } catch {
       if (log) {
-        console.log(`not have everyday-stock-info/${formatDate} file, will download it.`);
+        console.log(`not have ${this.path}/${formatDate} file, will download it.`);
       }
       return false;
     }
