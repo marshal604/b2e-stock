@@ -1,0 +1,47 @@
+input GetMarketCreditTradeListInput {
+  dayCount: Int
+}
+
+input GetStockCreditTradeListInput {
+  code: String!
+  dayCount: Int
+}
+
+type MarketCreditTradeList {
+  date: String
+  financing: MarketCreditTradeItem
+  selling: MarketCreditTradeItem
+  finacingCash: MarketCreditTradeItem
+}
+
+type MarketCreditTradeItem {
+  buy: String
+  sell: String
+  cashRepayment: String
+  yesterdayBalance: String
+  todayBalance: String
+}
+
+type StockCreditTradeList {
+  date: String
+  list: [StockCreditTradeItem]
+}
+
+type StockCreditTradeItem {
+  code: String
+  name: String
+  financingBuy: String
+  financingSell: String
+  financingCashRepayment: String
+  financingYesterdayBalance: String
+  financingTodayBalance: String
+  financingLimit: String
+  sellingBuy: String
+  sellingSell: String
+  sellingCashRepayment: String
+  sellingYesterdayBalance: String
+  sellingTodayBalance: String
+  sellingLimit: String
+  payment: String
+  remark: String
+}

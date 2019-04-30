@@ -11,7 +11,7 @@ import {
 } from '@models/credit-trade/credit-trade.model';
 export class EverydayCreditTradeCrawler {
   private initDate: Date;
-  private path = 'every-credit-trade';
+  private path = 'everyday-credit-trade';
   constructor(date: Date) {
     this.initDate = date;
   }
