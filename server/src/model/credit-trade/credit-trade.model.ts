@@ -10,6 +10,10 @@ export interface MarketCreditTradeList {
   finacingCash: MarketCreditTradeItem; // 融資金額(仟元)
 }
 
+export interface GetMarketCreditTradeListInput {
+  dayCount?: number;
+}
+
 export interface MarketCreditTradeItem {
   buy: string; // 買進
   sell: string; // 賣出
@@ -21,6 +25,11 @@ export interface MarketCreditTradeItem {
 export interface StockCreditTradeList {
   date: string; // 日期
   list: StockCreditTradeItem[]; // 個股信用交易項目
+}
+
+export interface GetStockCreditTradeListInput {
+  code: string;
+  dayCount?: number;
 }
 
 export interface StockCreditTradeItem {
