@@ -1,8 +1,15 @@
-# import EverydayStockInfoItem, EverydayStockInfoItemInput from './stcok-info/stock-info.graphql';
+# import * from './stock-info/stock-info.graphql';
+# import * from './credit-trade/credit-trade.graphql';
 
 type Query {
   sayHello(name: String): String!
   EverydayStockInfoList(
     req: EverydayStockInfoItemInput
   ): [EverydayStockInfoItem]
+  marketCreditTradeList(
+    req: GetMarketCreditTradeListInput
+  ): [MarketCreditTradeList]
+  stockCreditTradeList(
+    req: GetStockCreditTradeListInput
+  ): [StockCreditTradeList]
 }
