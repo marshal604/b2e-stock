@@ -14,7 +14,7 @@ import {
 export const resolvers = {
   Query: {
     sayHello: (_: any, arg: { name: string }) => `Hello ${arg.name}!`,
-    EverydayStockInfoList: (_: any, arg: { req: EverydayStockInfoItemInput }) => {
+    everydayStockInfoList: (_: any, arg: { req: EverydayStockInfoItemInput }) => {
       const code = arg.req ? arg.req.code : undefined;
       const dayCount = arg.req ? arg.req.dayCount : undefined;
       return stockDailyInfoList(code, dayCount);
