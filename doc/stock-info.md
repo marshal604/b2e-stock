@@ -4,8 +4,8 @@
 ### query
 ```
 # Write your query or mutation here
-query EverydayStockInfoList($req: EverydayStockInfoItemInput){
-  EverydayStockInfoList(req: $req){
+query ($req: EverydayStockInfoItemInput){
+  everydayStockInfoList(req: $req){
     date
     stockInfo {
       code
