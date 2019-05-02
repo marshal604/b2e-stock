@@ -26,7 +26,7 @@ export class EverydayCreditTradeCrawler {
 
   private dailyCrawlEveryDayCreditTrade() {
     mkdirIfNotExist(this.path);
-    const intervalTime = 5_000;
+    const intervalTime = 15_000;
     // create everyday-credit-trade
     let everyCreditTradeFileDate = new Date(this.initDate);
     let everyCreditTradeFileCount = 0;

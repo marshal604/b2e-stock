@@ -3,7 +3,7 @@
 
 type Query {
   sayHello(name: String): String!
-  EverydayStockInfoList(
+  everydayStockInfoList(
     req: EverydayStockInfoItemInput
   ): [EverydayStockInfoItem]
   marketCreditTradeList(
