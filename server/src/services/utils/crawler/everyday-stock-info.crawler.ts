@@ -25,7 +25,7 @@ export class EverydayStockInfoCrawler {
 
   private dailyCrawlEveryDayStockInfo() {
     mkdirIfNotExist(this.path);
-    const intervalTime = 5_000;
+    const intervalTime = 15_000;
     // create everyday-stock-info
     let everyStockDate = new Date(this.initDate);
     let everyStockCount = 0;
