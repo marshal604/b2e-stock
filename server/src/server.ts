@@ -22,7 +22,6 @@ const options = {
 
 server.start(options, ({ port }) => console.log(`Server is running on http://localhost:${port}`));
 // daily crawler
-// const initDate = new Date(new Date().setDate(new Date().getDate() - 5));
-const initDate = new Date('2019/01/01');
+const initDate = new Date(new Date().setDate(new Date().getDate() - 5));
 const crawler = new Crawler(initDate);
 crawler.init();
