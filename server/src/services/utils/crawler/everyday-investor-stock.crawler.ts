@@ -4,27 +4,27 @@ import { isCurrentDateIsWeekend, formatDate as formatDateFunc } from '@utils/dat
 import { writeFile, readFileSync, mkdirIfNotExist, formatNumberSymbol } from '@utils/io/io';
 import { FileModel } from '@utils/io/io.model';
 import {
-  InvestorTradeJsonModel,
-  StockInvestorTradeList,
-  StockInvestorTradeItem
-} from '@models/investor/investor-trade.model';
+  InvestorStockJsonModel,
+  InvestorStockList,
+  InvestorStockItem
+} from '@models/investor/investor-stock.model';
 
-export class EverydayInvestorTradeCrawler {
+export class EverydayInvestorStockCrawler {
   private initDate: Date;
-  private path = 'everyday-investor-trade';
+  private path = 'everyday-investor-stock';
   constructor(date: Date) {
     this.initDate = date;
   }
 
   init() {
     const half_day = 43_200_000;
-    this.dailyCrawlEveryDayInvestorTrade();
+    this.dailyCrawlEveryDayInvestorStock();
     setInterval(() => {
-      this.dailyCrawlEveryDayInvestorTrade();
+      this.dailyCrawlEveryDayInvestorStock();
     }, half_day);
   }
 
-  private dailyCrawlEveryDayInvestorTrade() {
+  private dailyCrawlEveryDayInvestorStock() {
     mkdirIfNotExist(this.path);
     const intervalTime = 15_000;
     // create everyday-credit-trade
@@ -33,7 +33,7 @@ export class EverydayInvestorTradeCrawler {
 
     while (everyCreditTradeFileDate.getTime() < new Date().getTime()) {
       // maybe not write file on ervey start;
-      if (this.hasRecentlyEveryDayInvestorTradeFile() && everyCreditTradeFileCount === 0) {
+      if (this.hasRecentlyEveryDayInvestorStockFile() && everyCreditTradeFileCount === 0) {
         everyCreditTradeFileDate = new Date();
         everyCreditTradeFileDate.setDate(everyCreditTradeFileDate.getDate() - 20);
         everyCreditTradeFileCount++;
@@ -41,7 +41,7 @@ export class EverydayInvestorTradeCrawler {
       // if has file do nothing
       const formatDate = formatDateFunc(everyCreditTradeFileDate);
       if (
-        this.hasEveryDayInvestorTradeFile(formatDate, false) ||
+        this.hasEveryDayInvestorStockFile(formatDate, false) ||
         isCurrentDateIsWeekend(everyCreditTradeFileDate)
       ) {
         everyCreditTradeFileDate.setDate(everyCreditTradeFileDate.getDate() + 1);
@@ -49,7 +49,7 @@ export class EverydayInvestorTradeCrawler {
       }
       const tempDate = new Date(everyCreditTradeFileDate.getTime());
       setTimeout(() => {
-        this.createEveryDayInverstorTradeDataJson(tempDate);
+        this.createEveryDayInverstorStockDataJson(tempDate);
       }, intervalTime * everyCreditTradeFileCount);
       everyCreditTradeFileCount++;
       everyCreditTradeFileDate.setDate(everyCreditTradeFileDate.getDate() + 1);
@@ -58,7 +58,7 @@ export class EverydayInvestorTradeCrawler {
 
   // server restart will execute
 
-  private createEveryDayInverstorTradeDataJson(date: Date) {
+  private createEveryDayInverstorStockDataJson(date: Date) {
     // is weeek do nothing
     if (isCurrentDateIsWeekend(date)) {
       return;
@@ -66,17 +66,17 @@ export class EverydayInvestorTradeCrawler {
     const formatDate = formatDateFunc(date);
 
     // if has file do nothing
-    if (this.hasEveryDayInvestorTradeFile(formatDate)) {
+    if (this.hasEveryDayInvestorStockFile(formatDate)) {
       return;
     }
     // download file
-    const url = `http://www.twse.com.tw/fund/T86?response=json&date=${formatDate}&selectType=ALL`;
+    const url = `http://www.twse.com.tw/fund/MI_QFIIS?response=json&date=${formatDate}&selectType=ALL`;
     axios
       .get(url)
       .then((fileData: any) => {
         try {
           const { date, data } = fileData.data;
-          const stockInvestorTradeList: StockInvestorTradeList = {
+          const investorStockList: InvestorStockList = {
             date: date,
             list: data
               .filter((array: string[]) => {
@@ -88,21 +88,14 @@ export class EverydayInvestorTradeCrawler {
                   ({
                     code: array[0], // 證券代號
                     name: array[1].trim(), // 證券名稱
-                    foreignInvestorBuy: +formatNumberSymbol(array[2]), // 外陸資買進股數(不含外資自營商)
-                    foreignInvestorSell: +formatNumberSymbol(array[3]), // 外陸資賣出股數(不含外資自營商)
-                    foreignInvestorBuyAndSell: +formatNumberSymbol(array[4]), // 外陸資買賣超股數(不含外資自營商)
-                    securtiesInvestorBuy: +formatNumberSymbol(array[8]), // 投信買進股數
-                    securtiesInvestorSell: +formatNumberSymbol(array[9]), // 投信賣出股數
-                    securtiesInvestorBuyAndSell: +formatNumberSymbol(array[10]), // 投信買賣超股數
-                    dealerBuy: +formatNumberSymbol(array[12]), // 自營商買進股數(自行買賣)
-                    dealerSell: +formatNumberSymbol(array[13]), // 自營商賣出股數(自行買賣)
-                    dealerBuyAndSell: +formatNumberSymbol(array[14]), // 自營商買賣超股數(自行買賣)
-                    allInvestorBuyAndSell: +formatNumberSymbol(array[18]) // 三大法人買賣超股數
-                  } as StockInvestorTradeItem)
+                    commonStockCount: +formatNumberSymbol(array[3]), // "發行股數"
+                    investorStockCount: +formatNumberSymbol(array[5]), // "全體外資及陸資持有股數"
+                    investorStockPercent: +formatNumberSymbol(array[7]) // "全體外資及陸資持股比率"
+                  } as InvestorStockItem)
               )
           };
-          const list: InvestorTradeJsonModel = {
-            stock: stockInvestorTradeList
+          const list: InvestorStockJsonModel = {
+            stock: investorStockList
           };
           writeFile({
             path: this.path,
@@ -117,20 +110,20 @@ export class EverydayInvestorTradeCrawler {
         console.log('err', err);
       });
   }
-  private hasRecentlyEveryDayInvestorTradeFile(): boolean {
+  private hasRecentlyEveryDayInvestorStockFile(): boolean {
     let hasRecentlyFile = false;
     Array.apply(null, Array(5)).map((_: any, index: number) => {
       const date = new Date();
       date.setDate(date.getDate() - 5);
       const formatDate = formatDateFunc(date);
-      if (this.hasEveryDayInvestorTradeFile(formatDate, false) && isCurrentDateIsWeekend(date)) {
+      if (this.hasEveryDayInvestorStockFile(formatDate, false) && isCurrentDateIsWeekend(date)) {
         hasRecentlyFile = true;
       }
     });
     return hasRecentlyFile;
   }
 
-  private hasEveryDayInvestorTradeFile(formatDate: string, log = true): boolean {
+  private hasEveryDayInvestorStockFile(formatDate: string, log = true): boolean {
     const path = this.path;
     try {
       const fileOption: FileModel = {
