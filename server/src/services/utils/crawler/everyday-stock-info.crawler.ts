@@ -1,63 +1,25 @@
 import axios from 'axios';
 
 import { isCurrentDateIsWeekend, formatDate as formatDateFunc } from '@utils/date/date';
-import { writeFile, readFileSync, mkdirIfNotExist } from '@utils/io/io';
-import { FileModel } from '@utils/io/io.model';
+import { writeFile } from '@utils/io/io';
 import {
   EverydayMarketInfo,
   EverydayStockInfo,
   EverydayStockFileModel
 } from '@models/stock-info/stock-info.model';
-export class EverydayStockInfoCrawler {
-  private initDate: Date;
-  private path = 'everyday-stock-info';
+import { BaseCrawler } from './base.crawler';
+export class EverydayStockInfoCrawler extends BaseCrawler {
   constructor(date: Date) {
-    this.initDate = date;
+    super(date);
   }
 
-  init() {
-    const half_day = 43_200_000;
-    this.dailyCrawlEveryDayStockInfo();
-    setInterval(() => {
-      this.dailyCrawlEveryDayStockInfo();
-    }, half_day);
-  }
-
-  private dailyCrawlEveryDayStockInfo() {
-    mkdirIfNotExist(this.path);
-    const intervalTime = 15_000;
-    // create everyday-stock-info
-    let everyStockDate = new Date(this.initDate);
-    let everyStockCount = 0;
-
-    while (everyStockDate.getTime() < new Date().getTime()) {
-      // maybe not write file on ervey start;
-      if (this.hasRecentlyEveryDayStockDataFile() && everyStockCount === 0) {
-        everyStockDate = new Date();
-        everyStockDate.setDate(everyStockDate.getDate() - 20);
-        everyStockCount++;
-      }
-      // if has file do nothing
-      const formatDate = formatDateFunc(everyStockDate);
-      if (
-        this.hasEveryDayStockDataJson(formatDate, false) ||
-        isCurrentDateIsWeekend(everyStockDate)
-      ) {
-        everyStockDate.setDate(everyStockDate.getDate() + 1);
-        continue;
-      }
-      const tempDate = new Date(everyStockDate.getTime());
-      setTimeout(() => {
-        this.createEveryDayStockDataJson(tempDate);
-      }, intervalTime * everyStockCount);
-      everyStockCount++;
-      everyStockDate.setDate(everyStockDate.getDate() + 1);
-    }
+  protected get path(): string {
+    return 'everyday-stock-info';
   }
 
   // server restart will execute
 
-  private createEveryDayStockDataJson(date: Date) {
+  protected async createEveryDayDataJson(date: Date): Promise<void> {
     // is weeek do nothing
     if (isCurrentDateIsWeekend(date)) {
       return;
@@ -65,7 +27,7 @@ export class EverydayStockInfoCrawler {
     const formatDate = formatDateFunc(date);
 
     // if has file do nothing
-    if (this.hasEveryDayStockDataJson(formatDate)) {
+    if (await this.hasEveryDayFile(formatDate)) {
       return;
     }
     // download file
@@ -123,34 +85,5 @@ export class EverydayStockInfoCrawler {
       .catch(err => {
         console.log('err', err);
       });
-  }
-  private hasRecentlyEveryDayStockDataFile(): boolean {
-    let hasRecentlyFile = false;
-    Array.apply(null, Array(5)).map((_: any, index: number) => {
-      const date = new Date();
-      date.setDate(date.getDate() - 5);
-      const formatDate = formatDateFunc(date);
-      if (this.hasEveryDayStockDataJson(formatDate, false) && isCurrentDateIsWeekend(date)) {
-        hasRecentlyFile = true;
-      }
-    });
-    return hasRecentlyFile;
-  }
-
-  private hasEveryDayStockDataJson(formatDate: string, log = true): boolean {
-    const path = this.path;
-    try {
-      const fileOption: FileModel = {
-        path,
-        fileName: formatDate
-      };
-      readFileSync(fileOption);
-      return true;
-    } catch {
-      if (log) {
-        console.log(`not have ${this.path}/${formatDate} file, will download it.`);
-      }
-      return false;
-    }
   }
 }
