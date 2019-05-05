@@ -1,64 +1,26 @@
 import axios from 'axios';
 
 import { isCurrentDateIsWeekend, formatDate as formatDateFunc } from '@utils/date/date';
-import { writeFile, readFileSync, mkdirIfNotExist, formatNumberSymbol } from '@utils/io/io';
-import { FileModel } from '@utils/io/io.model';
+import { writeFile, formatNumberSymbol } from '@utils/io/io';
 import {
   InvestorTradeJsonModel,
   StockInvestorTradeList,
   StockInvestorTradeItem
 } from '@models/investor/investor-trade.model';
+import { BaseCrawler } from './base.crawler';
 
-export class EverydayInvestorTradeCrawler {
-  private initDate: Date;
-  private path = 'everyday-investor-trade';
+export class EverydayInvestorTradeCrawler extends BaseCrawler {
   constructor(date: Date) {
-    this.initDate = date;
+    super(date);
   }
 
-  init() {
-    const half_day = 43_200_000;
-    this.dailyCrawlEveryDayInvestorTrade();
-    setInterval(() => {
-      this.dailyCrawlEveryDayInvestorTrade();
-    }, half_day);
-  }
-
-  private dailyCrawlEveryDayInvestorTrade() {
-    mkdirIfNotExist(this.path);
-    const intervalTime = 15_000;
-    // create everyday-credit-trade
-    let everyCreditTradeFileDate = new Date(this.initDate);
-    let everyCreditTradeFileCount = 0;
-
-    while (everyCreditTradeFileDate.getTime() < new Date().getTime()) {
-      // maybe not write file on ervey start;
-      if (this.hasRecentlyEveryDayInvestorTradeFile() && everyCreditTradeFileCount === 0) {
-        everyCreditTradeFileDate = new Date();
-        everyCreditTradeFileDate.setDate(everyCreditTradeFileDate.getDate() - 20);
-        everyCreditTradeFileCount++;
-      }
-      // if has file do nothing
-      const formatDate = formatDateFunc(everyCreditTradeFileDate);
-      if (
-        this.hasEveryDayInvestorTradeFile(formatDate, false) ||
-        isCurrentDateIsWeekend(everyCreditTradeFileDate)
-      ) {
-        everyCreditTradeFileDate.setDate(everyCreditTradeFileDate.getDate() + 1);
-        continue;
-      }
-      const tempDate = new Date(everyCreditTradeFileDate.getTime());
-      setTimeout(() => {
-        this.createEveryDayInverstorTradeDataJson(tempDate);
-      }, intervalTime * everyCreditTradeFileCount);
-      everyCreditTradeFileCount++;
-      everyCreditTradeFileDate.setDate(everyCreditTradeFileDate.getDate() + 1);
-    }
+  protected get path(): string {
+    return 'everyday-investor-trade';
   }
 
   // server restart will execute
 
-  private createEveryDayInverstorTradeDataJson(date: Date) {
+  protected async createEveryDayDataJson(date: Date): Promise<void> {
     // is weeek do nothing
     if (isCurrentDateIsWeekend(date)) {
       return;
@@ -66,7 +28,7 @@ export class EverydayInvestorTradeCrawler {
     const formatDate = formatDateFunc(date);
 
     // if has file do nothing
-    if (this.hasEveryDayInvestorTradeFile(formatDate)) {
+    if (await this.hasEveryDayFile(formatDate)) {
       return;
     }
     // download file
@@ -116,34 +78,5 @@ export class EverydayInvestorTradeCrawler {
       .catch(err => {
         console.log('err', err);
       });
-  }
-  private hasRecentlyEveryDayInvestorTradeFile(): boolean {
-    let hasRecentlyFile = false;
-    Array.apply(null, Array(5)).map((_: any, index: number) => {
-      const date = new Date();
-      date.setDate(date.getDate() - 5);
-      const formatDate = formatDateFunc(date);
-      if (this.hasEveryDayInvestorTradeFile(formatDate, false) && isCurrentDateIsWeekend(date)) {
-        hasRecentlyFile = true;
-      }
-    });
-    return hasRecentlyFile;
-  }
-
-  private hasEveryDayInvestorTradeFile(formatDate: string, log = true): boolean {
-    const path = this.path;
-    try {
-      const fileOption: FileModel = {
-        path,
-        fileName: formatDate
-      };
-      readFileSync(fileOption);
-      return true;
-    } catch {
-      if (log) {
-        console.log(`not have ${this.path}/${formatDate} file, will download it.`);
-      }
-      return false;
-    }
   }
 }
