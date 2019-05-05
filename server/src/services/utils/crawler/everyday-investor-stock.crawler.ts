@@ -32,12 +32,15 @@ export class EverydayInvestorStockCrawler extends BaseCrawler {
       return;
     }
     // download file
-    const url = `http://www.twse.com.tw/fund/MI_QFIIS?response=json&date=${formatDate}&selectType=ALL`;
+    const url = `http://www.twse.com.tw/fund/MI_QFIIS?response=json&date=${formatDate}&selectType=ALLBUT0999`;
     axios
       .get(url)
       .then((fileData: any) => {
         try {
           const { date, data } = fileData.data;
+          if (data.length === 0) {
+            return;
+          }
           const investorStockList: InvestorStockList = {
             date: date,
             list: data
@@ -52,7 +55,7 @@ export class EverydayInvestorStockCrawler extends BaseCrawler {
                     name: array[1].trim(), // 證券名稱
                     commonStockCount: +formatNumberSymbol(array[3]), // "發行股數"
                     investorStockCount: +formatNumberSymbol(array[5]), // "全體外資及陸資持有股數"
-                    investorStockPercent: +formatNumberSymbol(array[7]) // "全體外資及陸資持股比率"
+                    investorStockPercent: +formatNumberSymbol(array[7].toString()) // "全體外資及陸資持股比率"
                   } as InvestorStockItem)
               )
           };
@@ -65,7 +68,7 @@ export class EverydayInvestorStockCrawler extends BaseCrawler {
             data: JSON.stringify(list)
           });
         } catch (err) {
-          console.log('load data somthing error');
+          console.log('load data somthing error', err);
         }
       })
       .catch(err => {

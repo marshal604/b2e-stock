@@ -32,7 +32,7 @@ export class EverydayInvestorTradeCrawler extends BaseCrawler {
       return;
     }
     // download file
-    const url = `http://www.twse.com.tw/fund/T86?response=json&date=${formatDate}&selectType=ALL`;
+    const url = `http://www.twse.com.tw/fund/T86?response=json&date=${formatDate}&selectType=ALLBUT0999`;
     axios
       .get(url)
       .then((fileData: any) => {
