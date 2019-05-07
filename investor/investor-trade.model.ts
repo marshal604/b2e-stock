@@ -1,22 +1,22 @@
 export interface InvestorTradeJsonModel {
-  stock: StockInvestorTradeList;
+  stock: InvestorTradeList;
 }
 
-export interface GetStockInvestorTradeListInput {
+export interface GetInvestorTradeListInput {
   dayCount?: number;
 }
 
-export interface GetStockInvestorTradeItemInput {
+export interface GetInvestorTradeItemInput {
   code: string;
   dayCount?: number;
 }
 
-export interface StockInvestorTradeList {
+export interface InvestorTradeList {
   date: string;
-  list: StockInvestorTradeItem[];
+  list: InvestorTradeItem[];
 }
 
-export interface StockInvestorTradeItem {
+export interface InvestorTradeItem {
   code: string; // 證券代號
   name: string; // 證券名稱
   foreignInvestorBuy: number; // 外陸資買進股數(不含外資自營商)
