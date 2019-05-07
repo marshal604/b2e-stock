@@ -1,0 +1,22 @@
+
+input GetInvestorStockListInput {
+  dayCount: Int
+}
+
+input GetInvestorStockItemInput {
+  code: String!
+  dayCount: Int
+}
+
+type InvestorStockList {
+  date: String
+  list: [InvestorStockItem]
+}
+
+type InvestorStockItem {
+  code: String
+  name: String
+  commonStockCount: Float
+  investorStockCount: Float
+  investorStockPercent: Float
+}

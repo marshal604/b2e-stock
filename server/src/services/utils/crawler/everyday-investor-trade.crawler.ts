@@ -4,8 +4,8 @@ import { isCurrentDateIsWeekend, formatDate as formatDateFunc } from '@utils/dat
 import { writeFile, formatNumberSymbol } from '@utils/io/io';
 import {
   InvestorTradeJsonModel,
-  StockInvestorTradeList,
-  StockInvestorTradeItem
+  InvestorTradeList,
+  InvestorTradeItem
 } from '@models/investor/investor-trade.model';
 import { BaseCrawler } from './base.crawler';
 
@@ -38,7 +38,7 @@ export class EverydayInvestorTradeCrawler extends BaseCrawler {
       .then((fileData: any) => {
         try {
           const { date, data } = fileData.data;
-          const stockInvestorTradeList: StockInvestorTradeList = {
+          const stockInvestorTradeList: InvestorTradeList = {
             date: date,
             list: data
               .filter((array: string[]) => {
@@ -60,7 +60,7 @@ export class EverydayInvestorTradeCrawler extends BaseCrawler {
                     dealerSell: +formatNumberSymbol(array[13]), // 自營商賣出股數(自行買賣)
                     dealerBuyAndSell: +formatNumberSymbol(array[14]), // 自營商買賣超股數(自行買賣)
                     allInvestorBuyAndSell: +formatNumberSymbol(array[18]) // 三大法人買賣超股數
-                  } as StockInvestorTradeItem)
+                  } as InvestorTradeItem)
               )
           };
           const list: InvestorTradeJsonModel = {

@@ -10,6 +10,25 @@ import {
   getMarketCreditTradeList,
   getStockCreditTradeList
 } from '@service/credit-trade/credit-trade';
+import {
+  GetInvestorIntegrateListInput,
+  InvestorIntegrateList
+} from '@models/investor/investor-integrate.model';
+import {
+  getInvestorIntegrateList,
+  getInvestorTrade,
+  getInvestorStock
+} from '@service/investor/investor';
+import {
+  GetInvestorTradeListInput,
+  InvestorTradeList,
+  GetInvestorTradeItemInput
+} from '@models/investor/investor-trade.model';
+import {
+  InvestorStockList,
+  GetInvestorStockListInput,
+  GetInvestorStockItemInput
+} from '@models/investor/investor-stock.model';
 
 export const resolvers = {
   Query: {
@@ -30,6 +49,36 @@ export const resolvers = {
       arg: { req: GetStockCreditTradeListInput }
     ): Promise<StockCreditTradeList[]> => {
       return getStockCreditTradeList(arg.req);
+    },
+    investorTradeList: (
+      _: any,
+      arg: { req: GetInvestorTradeListInput }
+    ): Promise<InvestorTradeList[]> => {
+      return getInvestorTrade(arg.req);
+    },
+    investorTradeListWithCode: (
+      _: any,
+      arg: { req: GetInvestorTradeItemInput }
+    ): Promise<InvestorTradeList[]> => {
+      return getInvestorTrade(arg.req);
+    },
+    investorStockList: (
+      _: any,
+      arg: { req: GetInvestorStockListInput }
+    ): Promise<InvestorStockList[]> => {
+      return getInvestorStock(arg.req);
+    },
+    investorStockListWithCode: (
+      _: any,
+      arg: { req: GetInvestorStockItemInput }
+    ): Promise<InvestorStockList[]> => {
+      return getInvestorStock(arg.req);
+    },
+    investorIntegrateList: (
+      _: any,
+      arg: { req: GetInvestorIntegrateListInput }
+    ): Promise<InvestorIntegrateList[]> => {
+      return getInvestorIntegrateList(arg.req);
     }
   }
 };

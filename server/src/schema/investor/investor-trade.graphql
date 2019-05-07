@@ -1,0 +1,28 @@
+input GetInvestorTradeListInput {
+  dayCount: Int
+}
+
+input GetInvestorTradeItemInput {
+  code: String!
+  dayCount: Int
+}
+
+type InvestorTradeList {
+  date: String
+  list: [InvestorTradeItem]
+}
+
+type InvestorTradeItem {
+  code: String
+  name: String
+  foreignInvestorBuy: Int
+  foreignInvestorSell: Int
+  foreignInvestorBuyAndSell: Int
+  securtiesInvestorBuy: Int
+  securtiesInvestorSell: Int
+  securtiesInvestorBuyAndSell: Int
+  dealerBuy: Int
+  dealerSell: Int
+  dealerBuyAndSell: Int
+  allInvestorBuyAndSell: Int
+}

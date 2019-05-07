@@ -1,5 +1,8 @@
 # import * from './stock-info/stock-info.graphql';
 # import * from './credit-trade/credit-trade.graphql';
+# import * from './investor/investor-integrate.graphql';
+# import * from './investor/investor-trade.graphql';
+# import * from './investor/investor-stock.graphql';
 
 type Query {
   sayHello(name: String): String!
@@ -12,4 +15,19 @@ type Query {
   stockCreditTradeList(
     req: GetStockCreditTradeListInput
   ): [StockCreditTradeList]
+  investorTradeList(
+    req: GetInvestorTradeListInput
+  ): [InvestorTradeList]
+  investorTradeListWithCode(
+    req: GetInvestorTradeItemInput   
+  ): [InvestorTradeList]
+  investorStockList(
+    req: GetInvestorStockListInput
+  ): [InvestorStockList]
+  investorStockListWithCode(
+    req: GetInvestorStockItemInput
+  ): [InvestorStockList]
+  investorIntegrateList(
+    req: GetInvestorIntegrateListInput
+  ): [InvestorIntegrateList]
 }
