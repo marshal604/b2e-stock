@@ -1,0 +1,27 @@
+type InvestorIntegrateItem {
+  code: String
+  name: String
+  commonStockCount: Float
+  investorStockCount: Float
+  investorStockPercent: Float
+  foreignInvestorBuy: Int
+  foreignInvestorSell: Int
+  foreignInvestorBuyAndSell: Int
+  securtiesInvestorBuy: Int
+  securtiesInvestorSell: Int
+  securtiesInvestorBuyAndSell: Int
+  dealerBuy: Int
+  dealerSell: Int
+  dealerBuyAndSell: Int
+  allInvestorBuyAndSell: Int
+}
+
+type InvestorIntegrateList {
+  date: String
+  list: [InvestorIntegrateItem]
+}
+
+input GetInvestorIntegrateListInput {
+  code: String
+  dayCount: Int
+}

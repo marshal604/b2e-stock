@@ -7,7 +7,9 @@ export abstract class BaseCrawler {
 
   init() {
     const half_day = 43_200_000;
-    this.dialyCrawlData();
+    setTimeout(() => {
+      this.dialyCrawlData();
+    }, Math.random() * 10 * 1_000);
     setInterval(() => {
       this.dialyCrawlData();
     }, half_day);
@@ -24,7 +26,7 @@ export abstract class BaseCrawler {
   // daily crawle
   protected async dialyCrawlData() {
     mkdirIfNotExist(this.path);
-    const intervalTime = 15_000;
+    const intervalTime = this.getRandomSec();
     // create crawler file
     let fileDate = new Date(this.initDate);
     let fileCount = 0;
@@ -77,5 +79,9 @@ export abstract class BaseCrawler {
       }
       return false;
     }
+  }
+
+  private getRandomSec(): number {
+    return (+(Math.random() * 10).toFixed() + 5) * 1_000;
   }
 }
