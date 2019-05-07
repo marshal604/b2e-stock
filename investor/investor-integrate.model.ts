@@ -8,5 +8,5 @@ export interface InvestorIntegrateList {
 }
 export interface GetInvestorIntegrateListInput {
   code?: string;
-  dayCount?: string;
+  dayCount?: number;
 }
